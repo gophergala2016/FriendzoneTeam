@@ -8,7 +8,7 @@ import (
     "net/url"
     "encoding/json"
     "github.com/ChimeraCoder/anaconda"
-    "friendzoneteam.org/util"
+    "github.com/gophergala2016/FriendzoneTeam/util"
 )
 
 func main()  {
