@@ -9,7 +9,17 @@ import (
     "encoding/json"
     "github.com/ChimeraCoder/anaconda"
     util "github.com/gophergala2016/FriendzoneTeam/util/dateformat"
+    "upper.io/db.v2"
+    "upper.io/db.v2/mongo"
 )
+
+type Scheduler struct {
+    DmId int16 `json:"id_dm" bson:"id_dm"`
+    Command string `json:"command" bson:"command"`
+    Type string `json:"type" bson:"type"`
+    UserId string `json:"user_id" bson:"user_id"`
+    Created_At string `json:"created_at" bson:"created_at"`
+}
 
 // Regresa los DMs que se han recibido en base a la fecha actual
 func RevisarDM(w http.ResponseWriter, r *http.Request){
@@ -34,6 +44,32 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
     cd := time.Now()
     currentDate := fmt.Sprintf("%d-%s-%d\n", cd.Day(), cd.Month(), cd.Year())
     i := 0
+    var settings = mongo.ConnectionURL{
+        Address:  db.Host("ds049945.mongolab.com:49945/socialgopher"), // MongoDB hostname.
+        Database: "socialgopher",            // Database name.
+        User:     "friendzonedb",             // Optional user name.
+        Password: "friendzonedb",             // Optional user password.
+    }
+    sess, err := db.Open(mongo.Adapter, settings)
+    var regs []Scheduler
+    if err != nil {
+        log.Fatalf("db.Open(): %q\n", err)
+    }
+    defer sess.Close()
+    // Scheduler
+    schedulerCollection, err := sess.Collection("scheduler")
+    if err != nil {
+        log.Fatalf("Could not use collection: %q\n", err)
+    }
+    var res db.Result
+    res = schedulerCollection.Find().Where("type = ?", "SHOW_FILE")
+    err = res.All(&regs)
+    if err != nil {
+        log.Fatalf("res.All(): %q\n", err)
+    }
+    
+    outputw, err := json.Marshal(regs)
+    
     for _, message := range dmResults {
         strFormat, err := util.DateFormat(message.CreatedAt)
         if err != nil {
@@ -46,8 +82,8 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         }
         // fmt.Printf("%d", i)
     }
-    
-    fmt.Fprintf(w, string(output))
+    fmt.Printf("%s", string(output))
+    fmt.Fprintf(w, string(outputw))
 }
 
 func createupdate() {
