@@ -39,10 +39,12 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         if err != nil {
             log.Fatal(err.Error())
         }
+        fmt.Printf("%s\n", message.CreatedAt)
+        fmt.Printf("%s - %s\n", currentDate, strFormat)
         if currentDate == strFormat {
             i++
         }
-        fmt.Printf("%d", i)
+        // fmt.Printf("%d", i)
     }
     
     fmt.Fprintf(w, string(output))
