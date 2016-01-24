@@ -4,16 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/creamdog/gonfig"
-	service "github.com/gophergala2016/FriendzoneTeam/services"
 	"os"
 	"regexp"
 	"strings"
 )
 
-type ArrMessage []service.Scheduler
+type Scheduler struct {
+    DmId string `json:"id_dm" bson:"id_dm"`
+    Command string `json:"command" bson:"command"`
+    UserId string `json:"user_id" bson:"user_id"`
+    Status string `json:"status" bson:"status"`
+    Created_At string `json:"created_at" bson:"created_at"`
+}
+
+type ArrMessage []Scheduler
 type Comandos struct {
-	status  bool
-	command string
+	Status  bool
+	Command string
 }
 type ArrComandos []Comandos
 
@@ -23,22 +30,25 @@ const NOMBRE_ARCHIVO = "[a-zA-z./_0-9-~]+"
 
 var flag = false
 
-func GetMessages(jsonS string) []comandos {
-	var mensajes arrMessage
+func GetMessages(jsonS string) []Comandos {
+	var mensajes ArrMessage
 	data := []byte(jsonS)
-	json.Unmarshal(data, &mensajes)
+	err := json.Unmarshal(data, &mensajes)
+    if err != nil {
+        fmt.Printf("GetMessages %s", err)
+    }
 	resultado := ProcessMessages(mensajes)
-	//fmt.Println(resultado)
+	// fmt.Println(resultado)
 	return resultado
 }
 
-func ProcessMessages(messages []service.Scheduler) []comandos {
+func ProcessMessages(messages []Scheduler) []Comandos {
 
-	var lista = make([]comandos, len(messages))
+	var lista = make([]Comandos, len(messages))
 	for i := 0; i < len(messages); i++ {
 		estatus, comando := interpretar(messages[i].Command)
-		lista[i].status = estatus
-		lista[i].command = comando
+		lista[i].Status = estatus
+		lista[i].Command = comando
 	}
 	return lista
 }
@@ -46,19 +56,22 @@ func ProcessMessages(messages []service.Scheduler) []comandos {
 func interpretar(comando string) (bool, string) {
 
 	var str string
-
 	arrcadenas := strings.Split(comando, " ")
+    // fmt.Printf("%s\n", arrcadenas)
+    
 	//Comandos
-	f, _ := os.Open("comandos.json")
-
+	f, err := os.Open("C:\\desarrollo\\ws_go\\src\\github.com\\gophergala2016\\FriendzoneTeam\\util\\performer\\comandos.json")
+    if err != nil {
+		fmt.Printf("Error abrir archivo: %s\n",err)
+	}
 	defer f.Close()
 
 	dicc, err := gonfig.FromJson(f)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error abrir archivo: %s\n",err)
 	}
-
+    
 	switch {
 	case arrcadenas[0] == "create":
 		str = create(dicc, arrcadenas)

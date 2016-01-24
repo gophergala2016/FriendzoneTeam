@@ -9,6 +9,8 @@ import (
     "github.com/ChimeraCoder/anaconda"
     "upper.io/db.v2"
     "upper.io/db.v2/mongo"
+    util "github.com/gophergala2016/FriendzoneTeam/util/performer"
+    ssh "github.com/gophergala2016/FriendzoneTeam/ssh"
 )
 
 type Scheduler struct {
@@ -57,7 +59,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         for _, message := range dmResults {
             var res db.Result
             reg := new(Scheduler)
-            res = schedulerCollection.Find().Where("id_dm = ?", message.IdStr)
+            res = schedulerCollection.Find().Where("id_dm = ?", message.IdStr,)
             err = res.One(reg)
             if err != nil {
                 log.Fatalf("res.All(): %q\n", err)
@@ -80,12 +82,27 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         }
         // Obtenemos todos los mensajes
         var results db.Result
-        results = schedulerCollection.Find()
+        results = schedulerCollection.Find().Where("status = ?", "Queue")
         err = results.All(&scheduler)
         output, err := json.Marshal(scheduler)
         if err != nil {
             log.Printf("Error: %s", err.Error())
         }
+        go func(){
+            var comandos util.ArrComandos
+            comandos = util.GetMessages(string(output))
+            for _, comando := range comandos {
+                if comando.Status {
+                    out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", comando.Command)
+                    if err != nil {
+                        log.Fatalf("Run failed: %s", err)
+                    }
+                    if out == "" {
+                        log.Fatalf("Output was empty for command: %s", comando.Command)
+                    }
+                }
+            }
+        }()
         fmt.Fprintf(w, string(output))
     }else {
         log.Println("No existe la collection")
@@ -109,6 +126,12 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         if err != nil {
             log.Printf("Error: %s", err.Error())
         }
+        go func(){
+           comandos := util.GetMessages(string(output)) 
+           for _, comando := range comandos {
+               fmt.Print(comando)
+           }
+        }()
         fmt.Fprintf(w, string(output))
     }
 }

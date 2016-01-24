@@ -9,11 +9,11 @@ import (
 )
 
 // Conecta al SSH y ejecuta el comando especificado
-func Conekta(user, password,cmd string)(string, error){
+func Conekta(user, password, host,cmd string)(string, error){
     var wg sync.WaitGroup
     result := make(chan string)
     hosts := make([]string, 1)
-    hosts[0] = "191.233.33.24"
+    hosts[0] = host
     sshConfig := &ssh.ClientConfig{
         User: user,
         Auth: []ssh.AuthMethod{
