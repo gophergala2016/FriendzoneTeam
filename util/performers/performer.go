@@ -21,9 +21,8 @@ import (
 //type arrMessage []anaconda.DirectMessage
 type arrMessage []service.Scheduler
 type comandos struct {
-	comando       string
-	uso           string
-	instrucciones []string
+	status  bool
+	command string
 }
 type arrComandos []comandos
 
@@ -34,30 +33,31 @@ const NOMBRE_ARCHIVO = "[a-zA-z./_0-9-~]+"
 var flag = false
 
 //func getMessages(jsonS string) (mesages []anaconda.DirectMessage) {
-func getMessages(jsonS string) (mesages []service.Scheduler) {
+func getMessages(jsonS string) (coms []comandos) {
 	var mensajes arrMessage
 	data := []byte(jsonS)
 	json.Unmarshal(data, &mensajes)
-	//fmt.Println(mensajes)
-	//for i := 0; i < len(mensajes); i++ {
-	processMessages(mensajes)
-	//}
-	return
+	resultado := processMessages(mensajes)
+	//fmt.Println(resultado)
+	return resultado
 }
 
 //func processMessages(messages []anaconda.DirectMessage) {
-func processMessages(messages []service.Scheduler) {
+func processMessages(messages []service.Scheduler) (coms []comandos) {
 
+	var lista = make([]comandos, len(messages))
 	for i := 0; i < len(messages); i++ {
 		//estatus, comando := interpretar(messages[i].Text)
 		estatus, comando := interpretar(messages[i].Command)
-		fmt.Println("----")
-		fmt.Println(messages[i].Command)
-		fmt.Println(estatus)
-		fmt.Println(comando)
-		fmt.Println("----")
+		//fmt.Println("----")
+		//fmt.Println(messages[i].Command)
+		//fmt.Println(estatus)
+		//fmt.Println(comando)
+		lista[i].status = estatus
+		lista[i].command = comando
+		//fmt.Println("----")
 	}
-	return
+	return lista
 }
 
 func interpretar(comando string) (status bool, ssh string) {
@@ -73,14 +73,10 @@ func interpretar(comando string) (status bool, ssh string) {
 
 	dicc, err := gonfig.FromJson(f)
 
-	//var cli comandos
-
 	if err != nil {
-		//fmt.Println("Se murio")
 		fmt.Println(err)
 	}
 
-	//fmt.Println(arrcadenas[0])
 	switch {
 	case arrcadenas[0] == "create":
 		str = create(dicc, arrcadenas)
@@ -99,7 +95,7 @@ func interpretar(comando string) (status bool, ssh string) {
 	if str != "" {
 		return true, str
 	}
-	return false, str
+	return false, "Comando Invalido"
 }
 
 func custom(arrcadenas []string) (comando string) {
@@ -137,7 +133,7 @@ func server(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 
 func rename(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	var str string
-	if testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
+	if len(arrcadenas) == 3 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) && testRegexp(NOMBRE_ARCHIVO, arrcadenas[2]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
 			str, _ = dicc.GetString("comandos/rename/v2/comando", nil)
 		} else {
@@ -145,13 +141,14 @@ func rename(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 		}
 		return completeRegExp(str, arrcadenas)
 	} else {
-		return ""
+		str, _ = dicc.GetString("comandos/rename/v1/error", nil)
+		return str
 	}
 }
 
 func move(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	var str string
-	if testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
+	if len(arrcadenas) == 3 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
 			str, _ = dicc.GetString("comandos/move/v2/comando", nil)
 		} else {
@@ -159,13 +156,14 @@ func move(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 		}
 		return completeRegExp(str, arrcadenas)
 	} else {
-		return ""
+		str, _ = dicc.GetString("comandos/move/v1/error", nil)
+		return str
 	}
 }
 
 func delete(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	var str string
-	if testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
+	if len(arrcadenas) == 2 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
 			str, _ = dicc.GetString("comandos/delete/v2/comando", nil)
 		} else {
@@ -173,7 +171,8 @@ func delete(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 		}
 		return completeRegExp(str, arrcadenas)
 	} else {
-		return ""
+		str, _ = dicc.GetString("comandos/delete/v1/error", nil)
+		return str
 	}
 }
 
@@ -194,7 +193,8 @@ func create(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 		}
 		return completeRegExp(str, arrcadenas)
 	} else {
-		return ""
+		str, _ = dicc.GetString("comandos/create/v1/error", nil)
+		return str
 	}
 }
 

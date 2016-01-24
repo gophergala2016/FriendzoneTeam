@@ -7,99 +7,82 @@
 		"create":{
 			"v1":{
 				"comando" : "touch $HOME/$1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo crear"
 			},
 			"v2":{
 				"comando" : "touch $1/$2",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo crear"
 			},
 			"v3":{
 				"comando" : "mkdir $HOME/$1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo crear"
 			},
 			"v4":{
 				"comando" : "mkdir $1/$2",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo crear"
 			}
 
 		},
 		"delete":{
 			"v1":{
 				"comando" : "rm $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Borrar"
 			},
 			"v2":{
 				"comando" : "rm -rf $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Borrar"
 			}
 		},
 		"move":{
 			"v1":{
 				"comando" : "mv $2 $1/$2",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Mover"
 			},
 			"v2":{
 				"comando" : "mv $2 $1/$2",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Mover"
 			}
 		},
 		"rename":{
 			"v1":{
 				"comando" : "mv $2 $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Renombrar"
 			},
 			"v2":{
 				"comando" : "mv $2 $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "El archivo NO se pudo Renombrar"
 			}
 		},
 		"server":{
 			"new":{
 				"go":{
 					"comando" : "go-server.sh",
-					"error"	  : "El archivo NO se pudo crear",
-					"succes"  : "Archivo Creado con exito"
+					"error"	  : "Fallo al levantar el servidor GO"
 				},
 				"lamp":{
 					"comando" : "lamp-server.sh",
-					"error"	  : "El archivo NO se pudo crear",
-					"succes"  : "Archivo Creado con exito"
+					"error"	  : "Fallo al levantar el servidor LAMP"
 				},
 				"lemp":{
 					"comando" : "lemp-server.sh",
-					"error"	  : "El archivo NO se pudo crear",
-					"succes"  : "Archivo Creado con exito"
+					"error"	  : "Fallo al levantar el servidor LEMP"
 				},
 				"mean":{
 					"comando" : "mean-server.sh",
-					"error"	  : "El archivo NO se pudo crear",
-					"succes"  : "Archivo Creado con exito"
+					"error"	  : "Fallo al levantar el servidor MEAN"
 				}
 			},
 			"start":{
 				"comando" : "sudo systemctl start $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "No se arranco el servicio"
 			},
 			"restart":{
 				"comando" : "sudo systemctl restart $1",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "No se reinicio el servicio"
 			},
 			"stop":{
 				"comando" : "sudo systemctl stop $",
-				"error"	  : "El archivo NO se pudo crear",
-				"succes"  : "Archivo Creado con exito"
+				"error"	  : "No se detuvo el servicio"
 			}
 		}
 	}
