@@ -1,0 +1,50 @@
+{
+	"comandos":{
+		"clean":{
+			"comando" : "",
+			"error"   : ""
+		},
+		"create":{
+			"v1":{
+				"comando" : "touch $HOME/$1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			},
+			"v2":{
+				"comando" : "touch $1/$2",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			}
+		},
+		"delete":{
+			"comando" : "",
+			"error"   : ""
+		},
+		"move":{
+			"comando" : "",
+			"error"   : ""
+		},
+		"rename":{
+			"comando" : "",
+			"error"   : ""
+		},
+		"server":{
+			"new":{
+				"comando" : "",
+				"error"   : ""	
+			},
+			"start":{
+				"comando" : "",
+				"error"   : ""	
+			},
+			"restart":{
+				"comando" : "",
+				"error"   : ""	
+			},
+			"stop":{
+				"comando" : "",
+				"error"   : ""	
+			}
+		}
+	}
+}
