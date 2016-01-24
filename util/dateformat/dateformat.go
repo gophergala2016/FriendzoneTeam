@@ -1,12 +1,14 @@
-package util
+package dateformat
 
-import "fmt"
-import "strings"
-import "errors"
+import (
+    "fmt"
+    "strings"
+    "errors"
+)
 
 
 
-func getMonth(month string){
+func getMonth(month string)(string){
     Months := map[string]string{
         " ": "---",
         "Jan": "January",
@@ -22,14 +24,13 @@ func getMonth(month string){
         "Nov": "November", 
         "Dec": "December",
     }
-    fmt.Print(Months[month])
+    return Months[month]
 }
+// Regresa el formato de la fecha para comparar vs el formato de Twitter
 func DateFormat(str string)(string, error)  {
     if str == "" {
         return "", errors.New("Empty string date")
     }
     strslice := strings.Split(str, " ")
-    getMonth(strslice[1])
-    return "", nil
-    
+    return fmt.Sprintf("%s-%s-%s", strslice[2], getMonth(strslice[1]), strslice[5]), nil
 }

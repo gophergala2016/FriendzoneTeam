@@ -2,13 +2,12 @@ package main
 
 import ( 
     "fmt"
-    "strings"
     "time"
     "net/http"
     "net/url"
     "encoding/json"
     "github.com/ChimeraCoder/anaconda"
-    "github.com/gophergala2016/FriendzoneTeam/util"
+    util "github.com/gophergala2016/FriendzoneTeam/util/dateformat"
 )
 
 func main()  {
@@ -37,8 +36,8 @@ func main()  {
         fmt.Println(message)*/
         currentDate := time.Now()
         fmt.Printf("%d-%s-%d\n", currentDate.Day(), currentDate.Month(), currentDate.Year())
-        srtdate := "Sat Jan 23 19:46:10 +0000 2016"
-        splitzer := strings.Split(srtdate, "")
+        strdate, _ := util.DateFormat("Sat Jan 23 19:46:10 +0000 2016")
+        fmt.Println(strdate)
         
         fmt.Fprintf(w, string(output))
     })
