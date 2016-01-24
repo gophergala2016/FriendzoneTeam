@@ -3,21 +3,19 @@ package service
 import (
     "fmt"
     "log"
-    "time"
     "net/http"
     "net/url"
     "encoding/json"
     "github.com/ChimeraCoder/anaconda"
-    util "github.com/gophergala2016/FriendzoneTeam/util/dateformat"
     "upper.io/db.v2"
     "upper.io/db.v2/mongo"
 )
 
 type Scheduler struct {
-    DmId int16 `json:"id_dm" bson:"id_dm"`
+    DmId int64 `json:"id_dm" bson:"id_dm"`
     Command string `json:"command" bson:"command"`
-    Type string `json:"type" bson:"type"`
     UserId string `json:"user_id" bson:"user_id"`
+    Status string `json:"status" bson:"status"`
     Created_At string `json:"created_at" bson:"created_at"`
 }
 
@@ -36,54 +34,75 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         log.Printf("Error: %s", err.Error())
     }
     
-    output, err := json.Marshal(dmResults)
-    if err != nil {
-        log.Printf("Error: %s", err.Error())
-    }
-    
-    cd := time.Now()
-    currentDate := fmt.Sprintf("%d-%s-%d\n", cd.Day(), cd.Month(), cd.Year())
-    i := 0
     var settings = mongo.ConnectionURL{
-        Address:  db.Host("ds049945.mongolab.com:49945/socialgopher"), // MongoDB hostname.
+        Address:  db.Host("ds049945.mongolab.com:49945"), // MongoDB hostname.
         Database: "socialgopher",            // Database name.
         User:     "friendzonedb",             // Optional user name.
         Password: "friendzonedb",             // Optional user password.
     }
     sess, err := db.Open(mongo.Adapter, settings)
-    var regs []Scheduler
+    var reg Scheduler
     if err != nil {
         log.Fatalf("db.Open(): %q\n", err)
     }
     defer sess.Close()
     // Scheduler
-    schedulerCollection, err := sess.Collection("scheduler")
-    if err != nil {
-        log.Fatalf("Could not use collection: %q\n", err)
-    }
-    var res db.Result
-    res = schedulerCollection.Find().Where("type = ?", "SHOW_FILE")
-    err = res.All(&regs)
-    if err != nil {
-        log.Fatalf("res.All(): %q\n", err)
-    }
-    
-    outputw, err := json.Marshal(regs)
-    
-    for _, message := range dmResults {
-        strFormat, err := util.DateFormat(message.CreatedAt)
+    lCollection, err := sess.Collections()
+    if len(lCollection) != 0 {
+        schedulerCollection, err := sess.Collection("scheduler")
         if err != nil {
-            log.Fatal(err.Error())
+            log.Fatalf("Could not use collection: %q\n", err)
         }
-        fmt.Printf("%s\n", message.CreatedAt)
-        fmt.Printf("%s - %s\n", currentDate, strFormat)
-        if currentDate == strFormat {
-            i++
+        var scheduler []Scheduler
+        for _, message := range dmResults {
+            var res db.Result
+            res = schedulerCollection.Find().Where("id_dm = ?", message.Id)
+            err = res.One(&reg)
+            if err != nil {
+                log.Fatalf("res.All(): %q\n", err)
+            }
+            // No existe el registro en la Base
+            if reg.DmId == 0 {
+                log.Println("No existe en la Base")
+                reg.DmId = message.Id
+                reg.Created_At = message.CreatedAt
+                reg.Status = "Queue"
+                reg.UserId = message.SenderScreenName
+                reg.Command = message.Text
+                schedulerCollection.Append(reg)
+            }
         }
-        // fmt.Printf("%d", i)
+        // Obtenemos todos los mensajes
+        var results db.Result
+        results = schedulerCollection.Find()
+        err = results.All(&scheduler)
+        output, err := json.Marshal(scheduler)
+        if err != nil {
+            log.Printf("Error: %s", err.Error())
+        }
+        fmt.Fprintf(w, string(output))
+    }else {
+        schedulerCollection, err := sess.Collection("scheduler")
+        var scheduler []Scheduler
+        for _, message := range dmResults {
+            reg.DmId = message.Id
+            reg.Created_At = message.CreatedAt
+            reg.Status = "Queue"
+            reg.UserId = message.SenderScreenName
+            reg.Command = message.Text
+            schedulerCollection.Append(reg)
+        }
+        
+        // Obtenemos todos los mensajes
+        var results db.Result
+        results = schedulerCollection.Find()
+        err = results.All(&scheduler)
+        output, err := json.Marshal(scheduler)
+        if err != nil {
+            log.Printf("Error: %s", err.Error())
+        }
+        fmt.Fprintf(w, string(output))
     }
-    fmt.Printf("%s", string(output))
-    fmt.Fprintf(w, string(outputw))
 }
 
 func createupdate() {
