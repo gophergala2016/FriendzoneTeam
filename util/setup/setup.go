@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-var host *string
-var user *string
-var pwd *string
-var spc string
+var Host *string
+var User *string
+var Pwd *string
+var Spc string
 
 //Valores Default
 
@@ -20,7 +20,7 @@ func init() {
 	spc = "spc scripts/go.sh $u@$h /tmp/go.sh"
 }
 
-func load() (string, string, string) {
+func Load() (string, string, string) {
 	flag.Parse()
 	spc = strings.Replace(spc, "$u", *user, 1)
 	spc = strings.Replace(spc, "$h", *host, 1)

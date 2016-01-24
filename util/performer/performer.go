@@ -1,30 +1,21 @@
 package performer
 
 import (
-	"fmt"
-	"regexp"
-	//	"io/ioutil"
-	"strings"
-	//    "log"
-	//    "time"
-	//    "net/http"
-	//    "net/url"
 	"encoding/json"
-	//	"github.com/ChimeraCoder/anaconda"
+	"fmt"
 	"github.com/creamdog/gonfig"
 	service "github.com/gophergala2016/FriendzoneTeam/services"
 	"os"
-	//    util "github.com/gophergala2016/FriendzoneTeam/util/dateformat"
+	"regexp"
+	"strings"
 )
 
-//tipo
-//type arrMessage []anaconda.DirectMessage
-type arrMessage []service.Scheduler
-type comandos struct {
+type ArrMessage []service.Scheduler
+type Comandos struct {
 	status  bool
 	command string
 }
-type arrComandos []comandos
+type ArrComandos []Comandos
 
 const ESPACIO = ""
 const NOESPACIOS = "[\\S]+"
@@ -32,30 +23,22 @@ const NOMBRE_ARCHIVO = "[a-zA-z./_0-9-~]+"
 
 var flag = false
 
-//func getMessages(jsonS string) (mesages []anaconda.DirectMessage) {
-func getMessages(jsonS string) []comandos {
+func GetMessages(jsonS string) []comandos {
 	var mensajes arrMessage
 	data := []byte(jsonS)
 	json.Unmarshal(data, &mensajes)
-	resultado := processMessages(mensajes)
+	resultado := ProcessMessages(mensajes)
 	//fmt.Println(resultado)
 	return resultado
 }
 
-//func processMessages(messages []anaconda.DirectMessage) {
-func processMessages(messages []service.Scheduler) []comandos {
+func ProcessMessages(messages []service.Scheduler) []comandos {
 
 	var lista = make([]comandos, len(messages))
 	for i := 0; i < len(messages); i++ {
-		//estatus, comando := interpretar(messages[i].Text)
 		estatus, comando := interpretar(messages[i].Command)
-		//fmt.Println("----")
-		//fmt.Println(messages[i].Command)
-		//fmt.Println(estatus)
-		//fmt.Println(comando)
 		lista[i].status = estatus
 		lista[i].command = comando
-		//fmt.Println("----")
 	}
 	return lista
 }
@@ -65,7 +48,6 @@ func interpretar(comando string) (bool, string) {
 	var str string
 
 	arrcadenas := strings.Split(comando, " ")
-
 	//Comandos
 	f, _ := os.Open("comandos.json")
 
