@@ -12,7 +12,7 @@ import (
 )
 
 type Scheduler struct {
-    DmId int64 `json:"id_dm" bson:"id_dm"`
+    DmId string `json:"id_dm" bson:"id_dm"`
     Command string `json:"command" bson:"command"`
     UserId string `json:"user_id" bson:"user_id"`
     Status string `json:"status" bson:"status"`
@@ -41,7 +41,6 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         Password: "friendzonedb",             // Optional user password.
     }
     sess, err := db.Open(mongo.Adapter, settings)
-    var reg Scheduler
     if err != nil {
         log.Fatalf("db.Open(): %q\n", err)
     }
@@ -49,6 +48,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
     // Scheduler
     lCollection, err := sess.Collections()
     if len(lCollection) != 0 {
+        log.Println("Existe la collection")
         schedulerCollection, err := sess.Collection("scheduler")
         if err != nil {
             log.Fatalf("Could not use collection: %q\n", err)
@@ -56,15 +56,18 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         var scheduler []Scheduler
         for _, message := range dmResults {
             var res db.Result
-            res = schedulerCollection.Find().Where("id_dm = ?", message.Id)
+            reg := new(Scheduler)
+            res = schedulerCollection.Find().Where("id_dm = ?", string(message.Id))
             err = res.One(&reg)
             if err != nil {
                 log.Fatalf("res.All(): %q\n", err)
             }
+            log.Println(message.Id)
+            log.Println(reg)
             // No existe el registro en la Base
-            if reg.DmId == 0 {
+            if reg.DmId != "" {
                 log.Println("No existe en la Base")
-                reg.DmId = message.Id
+                reg.DmId = message.IdStr
                 reg.Created_At = message.CreatedAt
                 reg.Status = "Queue"
                 reg.UserId = message.SenderScreenName
@@ -82,10 +85,12 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         }
         fmt.Fprintf(w, string(output))
     }else {
+        log.Println("No existe la collection")
         schedulerCollection, err := sess.Collection("scheduler")
         var scheduler []Scheduler
         for _, message := range dmResults {
-            reg.DmId = message.Id
+            var reg Scheduler
+            reg.DmId = message.IdStr
             reg.Created_At = message.CreatedAt
             reg.Status = "Queue"
             reg.UserId = message.SenderScreenName
