@@ -14,36 +14,92 @@
 				"comando" : "touch $1/$2",
 				"error"	  : "El archivo NO se pudo crear",
 				"succes"  : "Archivo Creado con exito"
+			},
+			"v3":{
+				"comando" : "mkdir $HOME/$1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			},
+			"v4":{
+				"comando" : "mkdir $1/$2",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
 			}
+
 		},
 		"delete":{
-			"comando" : "",
-			"error"   : ""
+			"v1":{
+				"comando" : "rm $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			},
+			"v2":{
+				"comando" : "rm -rf $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			}
 		},
 		"move":{
-			"comando" : "",
-			"error"   : ""
+			"v1":{
+				"comando" : "mv $2 $1/$2",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			},
+			"v2":{
+				"comando" : "mv $2 $1/$2",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			}
 		},
 		"rename":{
-			"comando" : "",
-			"error"   : ""
+			"v1":{
+				"comando" : "mv $2 $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			},
+			"v2":{
+				"comando" : "mv $2 $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
+			}
 		},
 		"server":{
 			"new":{
-				"comando" : "",
-				"error"   : ""	
+				"go":{
+					"comando" : "go-server.sh",
+					"error"	  : "El archivo NO se pudo crear",
+					"succes"  : "Archivo Creado con exito"
+				},
+				"lamp":{
+					"comando" : "lamp-server.sh",
+					"error"	  : "El archivo NO se pudo crear",
+					"succes"  : "Archivo Creado con exito"
+				},
+				"lemp":{
+					"comando" : "lemp-server.sh",
+					"error"	  : "El archivo NO se pudo crear",
+					"succes"  : "Archivo Creado con exito"
+				},
+				"mean":{
+					"comando" : "mean-server.sh",
+					"error"	  : "El archivo NO se pudo crear",
+					"succes"  : "Archivo Creado con exito"
+				}
 			},
 			"start":{
-				"comando" : "",
-				"error"   : ""	
+				"comando" : "sudo systemctl start $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
 			},
 			"restart":{
-				"comando" : "",
-				"error"   : ""	
+				"comando" : "sudo systemctl restart $1",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
 			},
 			"stop":{
-				"comando" : "",
-				"error"   : ""	
+				"comando" : "sudo systemctl stop $",
+				"error"	  : "El archivo NO se pudo crear",
+				"succes"  : "Archivo Creado con exito"
 			}
 		}
 	}
