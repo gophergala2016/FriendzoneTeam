@@ -33,7 +33,7 @@ const NOMBRE_ARCHIVO = "[a-zA-z./_0-9-~]+"
 var flag = false
 
 //func getMessages(jsonS string) (mesages []anaconda.DirectMessage) {
-func getMessages(jsonS string) (coms []comandos) {
+func getMessages(jsonS string) []comandos {
 	var mensajes arrMessage
 	data := []byte(jsonS)
 	json.Unmarshal(data, &mensajes)
@@ -43,7 +43,7 @@ func getMessages(jsonS string) (coms []comandos) {
 }
 
 //func processMessages(messages []anaconda.DirectMessage) {
-func processMessages(messages []service.Scheduler) (coms []comandos) {
+func processMessages(messages []service.Scheduler) []comandos {
 
 	var lista = make([]comandos, len(messages))
 	for i := 0; i < len(messages); i++ {
@@ -60,7 +60,7 @@ func processMessages(messages []service.Scheduler) (coms []comandos) {
 	return lista
 }
 
-func interpretar(comando string) (status bool, ssh string) {
+func interpretar(comando string) (bool, string) {
 
 	var str string
 
@@ -98,14 +98,14 @@ func interpretar(comando string) (status bool, ssh string) {
 	return false, "Comando Invalido"
 }
 
-func custom(arrcadenas []string) (comando string) {
+func custom(arrcadenas []string) string {
 	var str string
 	str = strings.Join(arrcadenas, " ")
 	str = strings.TrimPrefix(str, ":")
 	return str
 }
 
-func server(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
+func server(dicc gonfig.Gonfig, arrcadenas []string) string {
 	var str string
 	switch {
 	case arrcadenas[1] == "new":
@@ -131,7 +131,7 @@ func server(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	return completeRegExp(str, arrcadenas)
 }
 
-func rename(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
+func rename(dicc gonfig.Gonfig, arrcadenas []string) string {
 	var str string
 	if len(arrcadenas) == 3 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) && testRegexp(NOMBRE_ARCHIVO, arrcadenas[2]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
@@ -146,7 +146,7 @@ func rename(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	}
 }
 
-func move(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
+func move(dicc gonfig.Gonfig, arrcadenas []string) string {
 	var str string
 	if len(arrcadenas) == 3 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
@@ -161,7 +161,7 @@ func move(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	}
 }
 
-func delete(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
+func delete(dicc gonfig.Gonfig, arrcadenas []string) string {
 	var str string
 	if len(arrcadenas) == 2 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
@@ -176,7 +176,7 @@ func delete(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	}
 }
 
-func create(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
+func create(dicc gonfig.Gonfig, arrcadenas []string) string {
 	var str string
 	if len(arrcadenas) == 2 && testRegexp(NOMBRE_ARCHIVO, arrcadenas[1]) {
 		if strings.HasSuffix(arrcadenas[1], "/") {
@@ -198,13 +198,13 @@ func create(dicc gonfig.Gonfig, arrcadenas []string) (comando string) {
 	}
 }
 
-func testRegexp(exp, val string) (valor bool) {
+func testRegexp(exp, val string) bool {
 	var reg *regexp.Regexp
 	reg, _ = regexp.Compile(exp)
 	return reg.MatchString(val)
 }
 
-func completeRegExp(ssh string, param []string) (truessh string) {
+func completeRegExp(ssh string, param []string) string {
 	var tssh string
 
 	if len(param) >= 3 {
@@ -217,14 +217,5 @@ func completeRegExp(ssh string, param []string) (truessh string) {
 		tssh = strings.Replace(ssh, "$1", param[1], -1)
 		tssh = strings.Replace(tssh, "//", "/", -1)
 	}
-	/*
-		fmt.Println("---")
-		fmt.Println(strings.Contains(ssh, "$2"))
-		fmt.Println(len(param) >= 3)
-		fmt.Println(len(param))
-		fmt.Println(ssh)
-		fmt.Println(tssh)
-		fmt.Println("---")
-	*/
 	return tssh
 }
