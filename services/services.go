@@ -57,22 +57,25 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         for _, message := range dmResults {
             var res db.Result
             reg := new(Scheduler)
-            res = schedulerCollection.Find().Where("id_dm = ?", string(message.Id))
-            err = res.One(&reg)
+            res = schedulerCollection.Find().Where("id_dm = ?", message.IdStr)
+            err = res.One(reg)
             if err != nil {
                 log.Fatalf("res.All(): %q\n", err)
-            }
-            log.Println(message.Id)
-            log.Println(reg)
-            // No existe el registro en la Base
-            if reg.DmId != "" {
-                log.Println("No existe en la Base")
-                reg.DmId = message.IdStr
-                reg.Created_At = message.CreatedAt
-                reg.Status = "Queue"
-                reg.UserId = message.SenderScreenName
-                reg.Command = message.Text
-                schedulerCollection.Append(reg)
+            }else{
+                // log.Println(err)
+                // log.Println(message.IdStr)
+                // log.Println(reg)
+                
+                // No existe el registro en la Base
+                if reg.DmId == "" {
+                    log.Println("No existe en la Base")
+                    reg.DmId = message.IdStr
+                    reg.Created_At = message.CreatedAt
+                    reg.Status = "Queue"
+                    reg.UserId = message.SenderScreenName
+                    reg.Command = message.Text
+                    schedulerCollection.Append(reg)
+                }
             }
         }
         // Obtenemos todos los mensajes
@@ -110,7 +113,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
     }
 }
 
-func createupdate() {
+func Createupdate() {
     
 }
 
