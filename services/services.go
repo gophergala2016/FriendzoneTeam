@@ -2,10 +2,12 @@ package service
 
 import (
     "fmt"
+    "strings"
     "log"
     "net/http"
     "net/url"
     "encoding/json"
+    "sync"
     "github.com/ChimeraCoder/anaconda"
     "upper.io/db.v2"
     "upper.io/db.v2/mongo"
@@ -64,10 +66,6 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
             if err != nil {
                 log.Fatalf("res.All(): %q\n", err)
             }else{
-                // log.Println(err)
-                // log.Println(message.IdStr)
-                // log.Println(reg)
-                
                 // No existe el registro en la Base
                 if reg.DmId == "" {
                     log.Println("No existe en la Base")
@@ -88,21 +86,59 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
         if err != nil {
             log.Printf("Error: %s", err.Error())
         }
-        go func(){
+        go func(col db.Collection, json string){
             var comandos util.ArrComandos
-            comandos = util.GetMessages(string(output))
+            comandos = util.GetMessages(json)
             for _, comando := range comandos {
                 if comando.Status {
+                    status := "Success"
                     out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", comando.Command)
                     if err != nil {
                         log.Fatalf("Run failed: %s", err)
+                        status = "Failed"
                     }
                     if out == "" {
                         log.Fatalf("Output was empty for command: %s", comando.Command)
+                        status = "Failed"
                     }
+                    var wg sync.WaitGroup
+                    wg.Add(2)
+                    go func(){
+                        defer wg.Done()
+                        var res2 db.Result
+                        reg2 := new(Scheduler)
+                        res2 = col.Find().Where("command = ?", comando.Command)
+                        err2 := res2.One(reg2)
+                        reg2.Status = status
+                        err2 = res2.Update(reg2)
+                        if err2 != nil {
+                            log.Printf("%s", err2)
+                        }
+                    }()
+                    
+                    go func(file string){
+                        defer wg.Done()
+                        if strings.HasSuffix(file, ".sh") {
+                            var cmds [3]string
+                            cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "root", "191.233.33.24", file)
+                            cmds[1] = fmt.Sprintf("chmod +x /tmp/%s", file)
+                            cmds[2] = fmt.Sprintf("./%s", file)
+                            
+                            for _, cmd := range cmds {
+                                out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", cmd)
+                                if err != nil {
+                                    log.Fatalf("Run failed: %s", err)
+                                }
+                                if out == "" {
+                                    log.Fatalf("Output was empty for command: %s", cmd)
+                                }
+                            }
+                        }
+                    }(out)
+                    wg.Wait()
                 }
             }
-        }()
+        }(schedulerCollection, string(output))
         fmt.Fprintf(w, string(output))
     }else {
         log.Println("No existe la collection")
@@ -127,10 +163,55 @@ func RevisarDM(w http.ResponseWriter, r *http.Request){
             log.Printf("Error: %s", err.Error())
         }
         go func(){
-           comandos := util.GetMessages(string(output)) 
-           for _, comando := range comandos {
-               fmt.Print(comando)
-           }
+            var comandos util.ArrComandos
+            comandos = util.GetMessages(string(output))
+            for _, comando := range comandos {
+                if comando.Status {
+                    status := "Success"
+                    out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", comando.Command)
+                    if err != nil {
+                        log.Fatalf("Run failed: %s", err)
+                        status = "Failed"
+                    }
+                    if out == "" {
+                        log.Fatalf("Output was empty for command: %s", comando.Command)
+                        status = "Failed"
+                    }
+                    var res db.Result
+                    reg := new(Scheduler)
+                    res = schedulerCollection.Find().Where("id_dm = ?", "Queue")
+                    err = res.One(reg)
+                    reg.Status = status
+                    err = res.Update(reg)
+                    if err != nil {
+                        fmt.Printf("%s", err)
+                    }
+                    
+                    var wg sync.WaitGroup
+                    wg.Add(1)
+                    go func(file string){
+                        defer wg.Done()
+                        if strings.HasSuffix(file, ".sh") {
+                            var cmds [3]string
+                            cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "root", "191.233.33.24", file)
+                            cmds[1] = fmt.Sprintf("chmod +x /tmp/%s", file)
+                            cmds[2] = fmt.Sprintf("./%s", file)
+                            
+                            for _, cmd := range cmds {
+                                out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", cmd)
+                                if err != nil {
+                                    log.Fatalf("Run failed: %s", err)
+                                }
+                                if out == "" {
+                                    log.Fatalf("Output was empty for command: %s", cmd)
+                                }
+                            }
+                        }
+                    }(out)
+                    wg.Wait()
+                     
+                }
+            }
         }()
         fmt.Fprintf(w, string(output))
     }
