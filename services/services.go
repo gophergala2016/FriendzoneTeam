@@ -104,14 +104,17 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 						status = "Failed"
 					}
 					var wg sync.WaitGroup
-                    if strings.HasSuffix(out, ".sh") {
+                    fmt.Println(status + "\n")
+                    fmt.Println(out + "\n")
+                    wg.Add(1)
+                    /*if strings.HasSuffix(out, ".sh") {
                         wg.Add(2)
                     }else {
                         wg.Add(1)
                     }
-					
-					go func() {
-						defer wg.Done()
+					log.Printf("%s", err2)
+					/*go func() {
+						defer wg.Done()   
 						var res2 db.Result
 						reg2 := new(Scheduler)
 						res2 = col.Find().Where("command = ?", comando.Command)
@@ -121,7 +124,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 						if err2 != nil {
 							log.Printf("%s", err2)
 						}
-					}()
+					*ssh/     }()*/
 					if strings.HasSuffix(out, ".sh") {
 						go func(file string) {
 							defer wg.Done()
@@ -188,7 +191,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 					}
 					var res db.Result
 					reg := new(Scheduler)
-					res = schedulerCollection.Find().Where("id_dm = ?", "Queue")
+					res = schedulerCollection.Find().Where("command = ?", comando.Command)
 					err = res.One(reg)
 					reg.Status = status
 					err = res.Update(reg)
@@ -198,9 +201,10 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 
 					var wg sync.WaitGroup
 					wg.Add(1)
-					go func(file string) {
-						defer wg.Done()
-						if strings.HasSuffix(file, ".sh") {
+					if strings.HasSuffix(out, ".sh") {
+						go func(file string) {
+							defer wg.Done()
+
 							var cmds [3]string
 							cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "root", "191.233.33.24", file)
 							cmds[1] = fmt.Sprintf("chmod +x /tmp/%s", file)
@@ -215,10 +219,10 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 									log.Fatalf("Output was empty for command: %s", cmd)
 								}
 							}
-						}
-					}(out)
-					wg.Wait()
 
+						}(out)
+					}
+					wg.Wait()
 				}
 			}
 		}()
