@@ -83,3 +83,7 @@ Send a DM to your twitter Account
 * Fabela Wendy, @[Ritalin_P](https://twitter.com/ritalin_p)
 * Sierra Jorge, @[Chemasmas](https://twitter.com/chemasmas)
 * Osorio Ricardo, [rk521@hotmail.com](mailto:rk521@hotmail.com)
+
+# Bugs
+* Use root account in ssh configuration to create a new server (this is not recommended)
+* [Warning] DM's must be deleted manually as running
