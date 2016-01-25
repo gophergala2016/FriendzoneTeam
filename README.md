@@ -10,7 +10,12 @@ Application that lets you run commands on the server (Ubuntu / Debian) via twitt
 * go 1.5+
 
 # Installation
+Edit the file: services/services.go and change lines: 25, 26 and 27
+Add your Twitter Api
 
+    anaconda.SetConsumerKey("")
+    anaconda.SetConsumerSecret("")
+    api := anaconda.NewTwitterApi("", "")
 
 # Examples
 (Desfault directory is $HOME/ for all examples)
@@ -30,6 +35,7 @@ Send a DM to your twitter Account
     * delete work/src/hello/
 * Move a File (Desfault directory is $HOME/)
     * move error_log $HOME/Backups/
+    * move error_log Backups
 * Move a Directory
     * move logs/ /var/www
     * move logs/ $HOME/Backups/
@@ -55,9 +61,12 @@ Send a DM to your twitter Account
         * server stop tor
 * Execute a bash command:include ":" at the start
     * :shutdown -h +60
+* Execute a personalized command
+    * Send a DM to your Twitter Account with ":" at first
+    * ![alt tag](https://k60.kn3.net/F/9/5/B/7/5/5FD.png)
 
 # Features
 * Anaconda
 * Gorilla
-* uper.io
+* uper.iot
 * gonfig
