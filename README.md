@@ -18,6 +18,10 @@ Add your Twitter Api
     anaconda.SetConsumerSecret("")
     api := anaconda.NewTwitterApi("", "")
 
+And add your ssh configuration (recommended root for servers use) at line 97 and 135
+
+    out, err := ssh.Conekta("USER", "PASS", "HOST", comando.Command)
+    
 # Examples
 (Desfault directory is $HOME/ for all examples)
 Send a DM to your twitter Account
