@@ -1,3 +1,4 @@
+![alt tag](https://k60.kn3.net/E/7/C/E/6/0/331.jpg)
 # FriendzoneTeam
 
 # SocialServer with Go
@@ -63,10 +64,18 @@ Send a DM to your twitter Account
     * :shutdown -h +60
 * Execute a personalized command
     * Send a DM to your Twitter Account with ":" at first
-    * ![alt tag](https://k60.kn3.net/F/9/5/B/7/5/5FD.png)
+    ![alt tag](https://k60.kn3.net/F/9/5/B/7/5/5FD.png)
+* Restart Apache2 Server && Install new Server go
+    ![alt tag](https://k60.kn3.net/5/6/3/F/D/8/A61.png)
 
 # Features
 * Anaconda
 * Gorilla
 * uper.iot
 * gonfig
+
+# Team
+* Arizpe Paul, @[kiramishima](https://twitter.com/kiramishima), [Github](https://github.com/kiramishima)
+* Fabela Wendy, @[Ritalin_P](https://twitter.com/ritalin_p)
+* Sierra Jorge, @[Chemasmas](https://twitter.com/chemasmas)
+* Osorio Ricardo, [rk521@hotmail.com](mailto:rk521@hotmail.com)
