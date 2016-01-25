@@ -26,9 +26,10 @@ type Scheduler struct {
 // Regresa los DMs que se han recibido en base a la fecha actual
 func RevisarDM(w http.ResponseWriter, r *http.Request) {
 	// Verifica si ha obtenido nuevos DMs
-	anaconda.SetConsumerKey("lCqA4GsOhivuJumCMynVuOI2B")
-	anaconda.SetConsumerSecret("B3XOc0n1FLw0faxl2SSCC7xNFxAAWdPnL7shzLj0Sq3l3OUqvE")
-	api := anaconda.NewTwitterApi("4804703832-9fNj7vcJBobyDdbYhDPKOfFbTJzXkq64VFr99Qr", "aK3dWB3HoM01p79UFRTD8eQh9SYCwElr1RCicqe3imHBf") // Revisamos que ejecute bien la conexion con las credenciales
+	//
+	anaconda.SetConsumerKey("XXXXXXXXXXXXXXXXXXXXXXXX")
+	anaconda.SetConsumerSecret("XXXXXXXXXXXXXXXXXXXXXXXX")
+	api := anaconda.NewTwitterApi("XXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXX") // Revisamos que ejecute bien la conexion con las credenciales
 	if api.Credentials == nil {
 		log.Println("Twitter Api client has empty (nil) credentials")
 	}
@@ -94,7 +95,8 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 			for _, comando := range comandos {
 				if comando.Status {
 					status := "Success"
-					out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", comando.Command)
+					//Cofiguracion de la conexion (user, password, host,cmd
+					out, err := ssh.Conekta("user", "password", "host", comando.Command)
 					if err != nil {
 						log.Fatalf("Run failed: %s", err)
 						status = "Failed"
@@ -104,33 +106,34 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 						status = "Failed"
 					}
 					var wg sync.WaitGroup
-                    fmt.Println(status + "\n")
-                    fmt.Println(out + "\n")
-                    wg.Add(1)
-                    /*if strings.HasSuffix(out, ".sh") {
-                        wg.Add(2)
-                    }else {
-                        wg.Add(1)
-                    }
-					log.Printf("%s", err2)
-					/*go func() {
-						defer wg.Done()   
-						var res2 db.Result
-						reg2 := new(Scheduler)
-						res2 = col.Find().Where("command = ?", comando.Command)
-						err2 := res2.One(reg2)
-						reg2.Status = status
-						err2 = res2.Update(reg2)
-						if err2 != nil {
-							log.Printf("%s", err2)
-						}
-					*ssh/     }()*/
+					fmt.Println(status + "\n")
+					fmt.Println(out + "\n")
+					wg.Add(1)
+					/*if strings.HasSuffix(out, ".sh") {
+					                        wg.Add(2)
+					                    }else {
+					                        wg.Add(1)
+					                    }
+										log.Printf("%s", err2)
+										/*go func() {
+											defer wg.Done()
+											var res2 db.Result
+											reg2 := new(Scheduler)
+											res2 = col.Find().Where("command = ?", comando.Command)
+											err2 := res2.One(reg2)
+											reg2.Status = status
+											err2 = res2.Update(reg2)
+											if err2 != nil {
+												log.Printf("%s", err2)
+											}
+										*ssh/     }()*/
 					if strings.HasSuffix(out, ".sh") {
 						go func(file string) {
 							defer wg.Done()
 
 							var cmds [3]string
-							cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "root", "191.233.33.24", file)
+							//Usuario y ruta del server
+							cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "user", "host", file)
 							cmds[1] = fmt.Sprintf("chmod +x /tmp/%s", file)
 							cmds[2] = fmt.Sprintf("./%s", file)
 
@@ -180,7 +183,8 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 			for _, comando := range comandos {
 				if comando.Status {
 					status := "Success"
-					out, err := ssh.Conekta("gophers", "gophers", "191.233.33.24", comando.Command)
+					//Datos conexion
+					out, err := ssh.Conekta("user", "password", "host", comando.Command)
 					if err != nil {
 						log.Fatalf("Run failed: %s", err)
 						status = "Failed"
@@ -206,7 +210,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 							defer wg.Done()
 
 							var cmds [3]string
-							cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "root", "191.233.33.24", file)
+							cmds[0] = fmt.Sprintf("scp scripts/%s %s@%s /tmp/%s", file, "user", "host", file)
 							cmds[1] = fmt.Sprintf("chmod +x /tmp/%s", file)
 							cmds[2] = fmt.Sprintf("./%s", file)
 
