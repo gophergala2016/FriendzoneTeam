@@ -104,7 +104,12 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 						status = "Failed"
 					}
 					var wg sync.WaitGroup
-					wg.Add(2)
+                    if strings.HasSuffix(out, ".sh") {
+                        wg.Add(2)
+                    }else {
+                        wg.Add(1)
+                    }
+					
 					go func() {
 						defer wg.Done()
 						var res2 db.Result
@@ -117,7 +122,7 @@ func RevisarDM(w http.ResponseWriter, r *http.Request) {
 							log.Printf("%s", err2)
 						}
 					}()
-					if strings.HasSuffix(file, ".sh") {
+					if strings.HasSuffix(out, ".sh") {
 						go func(file string) {
 							defer wg.Done()
 
